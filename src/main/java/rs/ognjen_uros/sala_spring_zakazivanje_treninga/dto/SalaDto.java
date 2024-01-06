@@ -1,6 +1,7 @@
 package rs.ognjen_uros.sala_spring_zakazivanje_treninga.dto;
 
-import rs.ognjen_uros.spring_zakazivanje_treninga.domain.TrainingType;
+
+import rs.ognjen_uros.sala_spring_zakazivanje_treninga.domain.TrainingType;
 
 import java.util.ArrayList;
 import java.util.List;
