@@ -8,18 +8,9 @@ import java.util.List;
 
 public class SalaDto {
 
-    private Long id;
     private String name;
     private String about;
-    private Number numberOfPersonalTrainers;
-    private List<TrainingType> trainingTypeList = new ArrayList<>();
-
-    public Long getId() {
-        return id;
-    }
-    public void setId(Long id) {
-        this.id = id;
-    }
+    private Integer numberOfPersonalTrainers;
 
     public String getName() {
         return name;
@@ -37,19 +28,11 @@ public class SalaDto {
         this.about = about;
     }
 
-    public Number getNumberOfPersonalTrainers() {
+    public Integer getNumberOfPersonalTrainers() {
         return numberOfPersonalTrainers;
     }
 
-    public void setNumberOfPersonalTrainers(Number numberOfPersonalTrainers) {
+    public void setNumberOfPersonalTrainers(Integer numberOfPersonalTrainers) {
         this.numberOfPersonalTrainers = numberOfPersonalTrainers;
-    }
-
-    public List<TrainingType> getTrainingTypeList() {
-        return trainingTypeList;
-    }
-
-    public void setTrainingTypeList(List<TrainingType> trainingTypeList) {
-        this.trainingTypeList = trainingTypeList;
     }
 }

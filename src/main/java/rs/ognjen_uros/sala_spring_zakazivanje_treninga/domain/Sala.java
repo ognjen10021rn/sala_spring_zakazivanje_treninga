@@ -16,10 +16,8 @@ public class Sala {
 
     private String about;
 
-    private Number numberOfTrainers;
+    private Integer numberOfTrainers;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "sala", orphanRemoval = true)
-    private List<TrainingType> trainingTypeList = new ArrayList<>();
 
     public Long getId() {
         return id;
@@ -45,19 +43,11 @@ public class Sala {
         this.about = about;
     }
 
-    public Number getNumberOfTrainers() {
+    public Integer getNumberOfTrainers() {
         return numberOfTrainers;
     }
 
-    public void setNumberOfTrainers(Number numberOfTrainers) {
+    public void setNumberOfTrainers(Integer numberOfTrainers) {
         this.numberOfTrainers = numberOfTrainers;
-    }
-
-    public List<TrainingType> getTrainingTypeList() {
-        return trainingTypeList;
-    }
-
-    public void setTrainingTypeList(List<TrainingType> trainingTypeList) {
-        this.trainingTypeList = trainingTypeList;
     }
 }
