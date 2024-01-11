@@ -16,7 +16,9 @@ public class Termin {
     private LocalDateTime start;
     private LocalDateTime end;
     private Boolean isScheduled;
+    private Integer maximumNumberOfAvailableSpots;
     private Integer numberOfAvailableSpots;
+    private Integer minimumNumberOfAvailableSpots;
     private String dayOfTheWeek;
     @ManyToOne(optional = false)
     private TrainingType trainingType;
@@ -31,15 +33,32 @@ public class Termin {
         this.id = id;
     }
 
-    public Boolean getScheduled() {
-        return isScheduled;
-    }
     public Integer getNumberOfAvailableSpots() {
         return numberOfAvailableSpots;
     }
 
     public void setNumberOfAvailableSpots(Integer numberOfAvailableSpots) {
         this.numberOfAvailableSpots = numberOfAvailableSpots;
+    }
+
+    public Boolean getScheduled() {
+        return isScheduled;
+    }
+
+    public Integer getMaximumNumberOfAvailableSpots() {
+        return maximumNumberOfAvailableSpots;
+    }
+
+    public void setMaximumNumberOfAvailableSpots(Integer maximumNumberOfAvailableSpots) {
+        this.maximumNumberOfAvailableSpots = maximumNumberOfAvailableSpots;
+    }
+
+    public Integer getMinimumNumberOfAvailableSpots() {
+        return minimumNumberOfAvailableSpots;
+    }
+
+    public void setMinimumNumberOfAvailableSpots(Integer minimumNumberOfAvailableSpots) {
+        this.minimumNumberOfAvailableSpots = minimumNumberOfAvailableSpots;
     }
 
     public void setScheduled(Boolean scheduled) {

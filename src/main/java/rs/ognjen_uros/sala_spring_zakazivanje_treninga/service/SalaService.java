@@ -11,6 +11,7 @@ import rs.ognjen_uros.sala_spring_zakazivanje_treninga.dto.TrainingTypeDto;
 import rs.ognjen_uros.sala_spring_zakazivanje_treninga.dto.UserTerminCreateDto;
 
 import java.util.List;
+import java.util.Map;
 
 public interface SalaService {
 
@@ -19,8 +20,11 @@ public interface SalaService {
     void scheduleTermin(UserTerminCreateDto userTerminCreate);
     void addSala(SalaDto salaDto);
 
+    Page<TerminDto> filterTermins(Map<String, String> params);
     void addTrainingtype(TrainingTypeDto trainingTypeDto);
     Void addTermin(TerminDto termin);
+
+    String unscheduleTermin(String token, Long temrinId);
     SalaDto update(SalaDto userDto, Long id);
 
     List<SalaDto> availableTermins();

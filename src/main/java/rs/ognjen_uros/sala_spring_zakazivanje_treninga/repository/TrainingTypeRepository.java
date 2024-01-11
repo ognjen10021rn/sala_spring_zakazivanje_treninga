@@ -10,4 +10,5 @@ import java.util.Optional;
 public interface TrainingTypeRepository extends JpaRepository<TrainingType, Long> {
 
     TrainingType findByName(String name);
+    TrainingType findByTypeOfTraining(String typeOfTraining);
 }

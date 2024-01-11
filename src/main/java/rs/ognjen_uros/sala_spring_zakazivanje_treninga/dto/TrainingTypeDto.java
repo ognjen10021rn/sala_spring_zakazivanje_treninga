@@ -5,7 +5,6 @@ import java.math.BigDecimal;
 public class TrainingTypeDto {
 
     private String name;
-    // grupni ili solo
     private String typeOfTraining;
     private BigDecimal price;
 

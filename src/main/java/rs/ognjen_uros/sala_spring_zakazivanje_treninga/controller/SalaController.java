@@ -19,6 +19,7 @@ import rs.ognjen_uros.sala_spring_zakazivanje_treninga.service.SalaService;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/sala")
@@ -63,5 +64,9 @@ public class SalaController {
     public ResponseEntity<Void> addTrainingtype(@RequestHeader("Authorization") String authorization, @RequestBody TrainingTypeDto trainingTypeDto){
         salaService.addTrainingtype(trainingTypeDto);
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+    @GetMapping("/filter")
+    public ResponseEntity<Page<TerminDto>> filterTermin(@RequestHeader("Authorization") String authorization, @RequestParam Map<String,String> params){
+        return new ResponseEntity<>(salaService.filterTermins(params) ,HttpStatus.OK);
     }
 }

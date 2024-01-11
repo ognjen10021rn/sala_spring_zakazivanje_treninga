@@ -16,7 +16,9 @@ public class TerminDto {
     private LocalDateTime end;
     private String trainingType;
     private String trainingName;
+    private Integer minimumAvailableSpots;
     private Integer availableSpots;
+    private Integer maximumAvailableSpots;
     public LocalDateTime getStart() {
         return start;
     }
@@ -31,6 +33,30 @@ public class TerminDto {
 
     public void setEnd(LocalDateTime end) {
         this.end = end;
+    }
+
+    public Integer getMinimumAvailableSpots() {
+        return minimumAvailableSpots;
+    }
+
+    public void setMinimumAvailableSpots(Integer minimumAvailableSpots) {
+        this.minimumAvailableSpots = minimumAvailableSpots;
+    }
+
+    public Integer getAvailableSpots() {
+        return availableSpots;
+    }
+
+    public void setAvailableSpots(Integer availableSpots) {
+        this.availableSpots = availableSpots;
+    }
+
+    public Integer getMaximumAvailableSpots() {
+        return maximumAvailableSpots;
+    }
+
+    public void setMaximumAvailableSpots(Integer maximumAvailableSpots) {
+        this.maximumAvailableSpots = maximumAvailableSpots;
     }
 
     public Long getSalaId() {
@@ -48,15 +74,6 @@ public class TerminDto {
     public void setTrainingType(String trainingType) {
         this.trainingType = trainingType;
     }
-
-    public Integer getAvailableSpots() {
-        return availableSpots;
-    }
-
-    public void setAvailableSpots(Integer availableSpots) {
-        this.availableSpots = availableSpots;
-    }
-
     public String getTrainingName() {
         return trainingName;
     }

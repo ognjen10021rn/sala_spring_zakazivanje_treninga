@@ -32,6 +32,9 @@ public class SalaMapper {
         terminDto.setTrainingType(termin.getTrainingType().getTypeOfTraining());
         terminDto.setTrainingName(termin.getTrainingType().getName());
         terminDto.setAvailableSpots(termin.getNumberOfAvailableSpots());
+        terminDto.setSalaId(termin.getSala().getId());
+        terminDto.setMaximumAvailableSpots(termin.getMaximumNumberOfAvailableSpots());
+        terminDto.setMinimumAvailableSpots(termin.getMinimumNumberOfAvailableSpots());
 
         return terminDto;
     }
