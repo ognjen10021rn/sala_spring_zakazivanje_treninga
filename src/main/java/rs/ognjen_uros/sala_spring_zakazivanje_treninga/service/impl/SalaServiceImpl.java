@@ -27,6 +27,7 @@ import rs.ognjen_uros.sala_spring_zakazivanje_treninga.repository.UserTerminRepo
 import rs.ognjen_uros.sala_spring_zakazivanje_treninga.secutiry.service.TokenService;
 import rs.ognjen_uros.sala_spring_zakazivanje_treninga.service.SalaService;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -73,6 +74,8 @@ public class SalaServiceImpl implements SalaService {
         return terminRepository.findAll(pageable).map(salaMapper::terminToTerminDto);
     }
 
+    
+
     @Override
     public void scheduleTermin(UserTerminCreateDto userTerminCreate) {
         ResponseEntity<UserDto> userDtoResponseEntity = null;
@@ -83,7 +86,7 @@ public class SalaServiceImpl implements SalaService {
 
         } catch (HttpClientErrorException e) {
             if (e.getStatusCode().equals(HttpStatus.NOT_FOUND))
-                throw new NotFoundException(String.format("Projection with id: %d not found.", userTerminCreate.getTerminId()));
+                throw new NotFoundException(String.format("User with id: %d not found.", userTerminCreate.getUserId()));
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -94,16 +97,17 @@ public class SalaServiceImpl implements SalaService {
                 .format("Termin with key: %s not found.", userTerminCreate.getTerminId())));
         UserDto usr = userDtoResponseEntity.getBody();
         // TODO provera ako se blizi termin treninga a nema >= od minimuma onda treba da se salje otkazivanje treninga
-        if(termin.getMaximumNumberOfAvailableSpots() >= termin.getNumberOfAvailableSpots()){
-            // ne znam sta da radimo ovde
+        if(termin.getNumberOfAvailableSpots() - 1 < 0){
+            System.out.println("NE MOZETE ZAKAZATI");
             return;
         }
+        termin.setNumberOfAvailableSpots(termin.getNumberOfAvailableSpots() - 1);
         userTerminRepository.save(new UserTermin(usr.getId(), userTerminCreate.getTerminId(), termin.getTrainingType().getPrice()));
         jmsTemplate.convertAndSend(incrementNumberOfSessions, messageHelper.createTextMessage(new IncrementNumberOfSessionsDto(userTerminCreate.getUserId())));
         Integer price = 0;
         System.out.println(usr.getEmail());
         System.out.println(usr.getNumberOfSessions());
-        if(usr.getNumberOfSessions() % 10 == 0){
+        if(usr.getNumberOfSessions() % 10 != 0){
             price = termin.getTrainingType().getPrice().intValue();
         }
         // username, start, end, bigDecimal
@@ -125,11 +129,51 @@ public class SalaServiceImpl implements SalaService {
     }
 
     @Override
-    public Page<TerminDto> filterTermins(Map<String, String> params) {
+    public List<UserTerminResponseDto> getAllZakazaniTreninzi(Long userId) {
+        List<UserTermin> userTermin = userTerminRepository.findAllByUserId(userId);
+        List<UserTerminResponseDto> userTerminResponseDtoList = new ArrayList<>();
+        Long i = 0L;
+        for(UserTermin t : userTermin){
+            Termin termin = terminRepository.findById(t.getTerminId())
+                    .orElseThrow(() -> new NotFoundException(String
+                            .format("Termin with key: %s not found.", t.getTerminId())));
+            UserTerminResponseDto userTerminResponseDto = new UserTerminResponseDto();
+            userTerminResponseDto.setUserId(userId);
+            userTerminResponseDto.setId(i);
+            i++;
+            userTerminResponseDto.setTerminId(termin.getId());
+            userTerminResponseDto.setStart(termin.getStart());
+            userTerminResponseDto.setEnd(termin.getEnd());
+            userTerminResponseDto.setSalaName(termin.getSala().getName());
+            userTerminResponseDto.setTrainingName(termin.getTrainingType().getName());
+            userTerminResponseDto.setTrainingType(termin.getTrainingType().getTypeOfTraining());
+            userTerminResponseDtoList.add(userTerminResponseDto);
+            
+        }
+        return userTerminResponseDtoList;
+        
+    }
+
+    @Override
+    public List<TerminDto> filterTermins(Map<String, String> params) {
         String day = params.get("dayOfTheWeek") != null ? params.get("dayOfTheWeek") : "";
         String trainingtype = params.get("trainingType")!= null ? params.get("trainingType") : "";
-        System.out.println(terminRepository.filterTrainings(trainingtype));
-        return null;
+//        System.out.println(terminRepository.filterTrainings(trainingtype));
+        List<TerminDto> terminDtoList = new ArrayList<>();
+        for(Termin termin : terminRepository.filterTrainings(trainingtype, day)){
+            TerminDto terminDto = new TerminDto();
+            terminDto.setSalaId(termin.getSala().getId());
+            terminDto.setMinimumAvailableSpots(termin.getMinimumNumberOfAvailableSpots());
+            terminDto.setMaximumAvailableSpots(termin.getMaximumNumberOfAvailableSpots());
+            terminDto.setAvailableSpots(termin.getNumberOfAvailableSpots());
+            terminDto.setStart(termin.getStart());
+            terminDto.setEnd(termin.getEnd());
+            terminDto.setTrainingName(termin.getTrainingType().getName());
+            terminDto.setTrainingType(termin.getTrainingType().getTypeOfTraining());
+            terminDtoList.add(terminDto);
+        }
+
+        return terminDtoList;
     }
 
     @Override
@@ -154,7 +198,7 @@ public class SalaServiceImpl implements SalaService {
         termin.setTrainingType(trainingType);
         termin.setScheduled(false);
         termin.setMinimumNumberOfAvailableSpots(terminDto.getMinimumAvailableSpots());
-        termin.setNumberOfAvailableSpots(termin.getNumberOfAvailableSpots());
+        termin.setNumberOfAvailableSpots(terminDto.getAvailableSpots());
         termin.setMaximumNumberOfAvailableSpots(terminDto.getMaximumAvailableSpots());
         termin.setDayOfTheWeek(terminDto.getStart().getDayOfWeek().name());
         terminRepository.save(termin);
@@ -162,7 +206,41 @@ public class SalaServiceImpl implements SalaService {
     }
 
     @Override
-    public String unscheduleTermin(String token, Long temrinId) {
+    public String unscheduleTermin(UserTerminCreateDto userTerminCreateDto, String jwt) {
+        String email = tokenService.extractAllClaims(jwt.substring(7));
+        ResponseEntity<UserDto> userDtoResponseEntity = null;
+        try {
+
+            userDtoResponseEntity = userServiceRestTemplate.exchange("/user/getUserByEmail/"
+                    + email, HttpMethod.GET, null, UserDto.class);
+
+        } catch (HttpClientErrorException e) {
+            if (e.getStatusCode().equals(HttpStatus.NOT_FOUND))
+                throw new NotFoundException(String.format("User with id: %d not found.", userTerminCreateDto.getUserId()));
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        // nije user nego manager
+        if(userDtoResponseEntity.getBody() == null){
+            ResponseEntity<ManagerDto> managerDtoResponseEntity = null;
+            try {
+
+                managerDtoResponseEntity = userServiceRestTemplate.exchange("/user/getUser/"
+                        + userTerminCreateDto.getUserId(), HttpMethod.GET, null, ManagerDto.class);
+
+            } catch (HttpClientErrorException e) {
+                if (e.getStatusCode().equals(HttpStatus.NOT_FOUND))
+                    throw new NotFoundException(String.format("User with id: %d not found.", userTerminCreateDto.getUserId()));
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            // manager otkazuje
+        }
+
+        UserDto usr = userDtoResponseEntity.getBody();
+
 
         return null;
     }

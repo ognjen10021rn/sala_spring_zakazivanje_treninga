@@ -34,4 +34,9 @@ public class TokenServiceImpl implements TokenService {
         }
         return claims;
     }
+    @Override
+    public String extractAllClaims(String token) {
+        return Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token).getBody().getSubject();
+    }
 }
+

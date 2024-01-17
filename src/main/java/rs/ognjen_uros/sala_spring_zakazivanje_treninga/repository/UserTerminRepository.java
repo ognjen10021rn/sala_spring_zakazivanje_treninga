@@ -15,4 +15,5 @@ import java.util.Optional;
 public interface UserTerminRepository extends JpaRepository<UserTermin, Long> {
 
     Optional<UserTermin> findAllByUserIdAndTerminId(Long userId, Long terminId);
+    List<UserTermin> findAllByUserId(Long userId);
 }

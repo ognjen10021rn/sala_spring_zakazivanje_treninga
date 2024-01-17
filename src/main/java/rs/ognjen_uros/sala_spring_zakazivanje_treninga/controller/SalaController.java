@@ -10,10 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import rs.ognjen_uros.sala_spring_zakazivanje_treninga.domain.Termin;
 import rs.ognjen_uros.sala_spring_zakazivanje_treninga.domain.UserTermin;
-import rs.ognjen_uros.sala_spring_zakazivanje_treninga.dto.SalaDto;
-import rs.ognjen_uros.sala_spring_zakazivanje_treninga.dto.TerminDto;
-import rs.ognjen_uros.sala_spring_zakazivanje_treninga.dto.TrainingTypeDto;
-import rs.ognjen_uros.sala_spring_zakazivanje_treninga.dto.UserTerminCreateDto;
+import rs.ognjen_uros.sala_spring_zakazivanje_treninga.dto.*;
 import rs.ognjen_uros.sala_spring_zakazivanje_treninga.secutiry.CheckSecurity;
 import rs.ognjen_uros.sala_spring_zakazivanje_treninga.service.SalaService;
 
@@ -22,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
+@CrossOrigin(origins = "*")
 @RequestMapping("/sala")
 public class SalaController {
 
@@ -48,10 +46,20 @@ public class SalaController {
     public ResponseEntity<Void> addTermin(@RequestHeader("Authorization") String authorization, @RequestBody TerminDto termin){
         return new ResponseEntity<>(salaService.addTermin(termin), HttpStatus.OK);
     }
+    @GetMapping("/allTermini/{userId}")
+    public ResponseEntity<List<UserTerminResponseDto>> getAllTermini(@RequestHeader("Authorization") String authorization, @PathVariable Long userId){
+
+        return new ResponseEntity<>(salaService.getAllZakazaniTreninzi(userId), HttpStatus.OK);
+    }
 
     @PostMapping("/scheduleTrening")
     public ResponseEntity<Void> scheduleTrening(@RequestHeader("Authorization") String authorization, @RequestBody UserTerminCreateDto userTerminCreateDto){
         salaService.scheduleTermin(userTerminCreateDto);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+    @PostMapping("/removeTrening")
+    public ResponseEntity<Void> removeTrening(@RequestHeader("Authorization") String authorization, @RequestBody UserTerminCreateDto userTerminCreateDto){
+        salaService.unscheduleTermin(userTerminCreateDto);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -66,7 +74,7 @@ public class SalaController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
     @GetMapping("/filter")
-    public ResponseEntity<Page<TerminDto>> filterTermin(@RequestHeader("Authorization") String authorization, @RequestParam Map<String,String> params){
+    public ResponseEntity<List<TerminDto>> filterTermin(@RequestHeader("Authorization") String authorization, @RequestParam Map<String,String> params){
         return new ResponseEntity<>(salaService.filterTermins(params) ,HttpStatus.OK);
     }
 }

@@ -7,4 +7,6 @@ public interface TokenService {
     String generate(Claims claims);
 
     Claims parseToken(String jwt);
+
+    String extractAllClaims(String jwt);
 }
