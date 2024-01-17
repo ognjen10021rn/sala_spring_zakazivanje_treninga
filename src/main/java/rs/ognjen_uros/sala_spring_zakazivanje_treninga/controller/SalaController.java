@@ -59,7 +59,7 @@ public class SalaController {
     }
     @PostMapping("/removeTrening")
     public ResponseEntity<Void> removeTrening(@RequestHeader("Authorization") String authorization, @RequestBody UserTerminCreateDto userTerminCreateDto){
-        salaService.unscheduleTermin(userTerminCreateDto);
+        salaService.unscheduleTermin(userTerminCreateDto, authorization);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
