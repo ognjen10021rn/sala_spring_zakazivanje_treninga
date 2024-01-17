@@ -18,6 +18,6 @@ public interface TerminRepository extends JpaRepository<Termin, Long> {
     @Query("SELECT t FROM Termin t WHERE (t.start >= :start AND t.start < :end) OR (t.end > :start AND t.end <= :end)")
     List<Termin> findOccupiedTimes(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
 
-    @Query("SELECT t FROM Termin t JOIN t.trainingType tt WHERE tt.typeOfTraining = :trainingType")
-    List<Termin> filterTrainings(@Param("trainingType") String trainingType);
+    @Query("SELECT t FROM Termin t JOIN t.trainingType tt WHERE (tt.typeOfTraining = :trainingType) OR (t.dayOfTheWeek = :dayOfTheWeek)")
+    List<Termin> filterTrainings(@Param("trainingType") String trainingType, @Param("dayOfTheWeek") String dayOfTheWeek);
 }
